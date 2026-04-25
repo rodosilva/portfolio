@@ -23,6 +23,7 @@ jobs:
           # Filter out empty lines and comments, then export variables to GITHUB_ENV
           grep -v '^\s*$' .env.local | grep -v '^\s*#' | while IFS= read -r line; do
           echo "$line" >> "$GITHUB_ENV"
+          done
 
       - name: Echo environment variables
         run: |
