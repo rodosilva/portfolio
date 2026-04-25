@@ -52,6 +52,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME
+          tags: ${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME:$DOCKER_TAG
           cache-from: type=gha
           cache-to: type=gha,mode=max
