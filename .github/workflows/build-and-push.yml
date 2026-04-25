@@ -45,13 +45,13 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME
+          images: ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_IMAGE_NAME }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: "${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME:$DOCKER_TAG"
+          tags: "${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_CONTAINER_NAME }}:${{ env.DOCKER_TAG }}"
           cache-from: type=gha
           cache-to: type=gha,mode=max
