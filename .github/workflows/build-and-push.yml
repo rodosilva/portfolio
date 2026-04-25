@@ -8,10 +8,6 @@ on:
       - 'v*'
   workflow_dispatch:
 
-env:
-  REGISTRY: docker.io
-  IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/portfoliocicd
-
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -21,6 +17,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Load environment variables
+        run: cat .env.local >> $GITHUB_ENV
+
+      - name: Echo environment variables
+        run: |
+          echo "Container Name: $DOCKER_CONTAINER_NAME"
+          echo "Image Name: $DOCKER_IMAGE_NAME"
+          echo "Tag: $DOCKER_TAG"
+          echo "Registry: $DOCKER_REGISTRY"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -35,12 +41,9 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME
           tags: |
-            type=ref,event=branch
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=sha,prefix={{branch}}-
+            type=semver,pattern={{version}},value=$DOCKER_TAG
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
