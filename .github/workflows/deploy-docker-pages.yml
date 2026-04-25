@@ -26,10 +26,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Load environment variables
+        run: |
+          # Filter out empty lines and comments, then export variables to GITHUB_ENV
+          grep -v '^\s*$' .env.local | grep -v '^\s*#' | while IFS= read -r line; do
+          echo "$line" >> "$GITHUB_ENV"
+          done
+
+      - name: Echo environment variables
+        run: |
+          echo "Container Name: $DOCKER_CONTAINER_NAME"
+          echo "Image Name: $DOCKER_IMAGE_NAME"
+          echo "Tag: $DOCKER_TAG"
+          echo "Registry: $DOCKER_REGISTRY"
+
       - name: Extract Docker image
         run: |
-          docker pull ${{ secrets.DOCKER_USERNAME }}/portfoliocicd:main
-          docker create --name temp-container ${{ secrets.DOCKER_USERNAME }}/portfoliocicd:main
+          docker pull ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_TAG }}
+          docker create --name temp-container ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_TAG }}
           docker cp temp-container:/usr/share/nginx/html ./dist
           docker rm temp-container
 
